@@ -1,68 +1,55 @@
-localhost {
+http://localhost:3000 {
 
   # Define named matchers satisfying a combination of content request specs
-  @rdf {
-    conneg {
-      match_types application/rdf+xml application/x-turtle
-      force_type_query_string format
-    }
-  }
-
-  @rdfFr {
-    conneg {
-      match_types application/rdf+xml application/x-turtle
-      force_type_query_string format
+  @Fr {
+    langneg {
       match_languages fr
-      force_language_query_string lang
     }
   }
 
-  @rdfDeEn {
-    conneg {
-      match_types application/rdf+xml application/x-turtle
-      force_type_query_string format
+  @DeEn {
+    langneg {
       match_languages de en
-      force_language_query_string lang
       var_language lang
     }
   }
 
-  @htmlBrotli {
-    conneg {
-      match_types text/html
-      force_type_query_string format
-      match_encodings br brotli
-      force_encoding_query_string enc
+  @FullDE {
+    langneg {
+      match_languages de-DE
+      full_locale true
+      var_language lang
     }
   }
 
-  @html {
-    conneg {
-      match_types text/html
-      force_type_query_string format
+  @ShortEn {
+    langneg {
+      match_languages en-US
+      full_locale false
+      var_language lang
+    }
+  }
+
+  @Fallback {
+    langneg {
+      match_languages pl-PL
+      full_locale false
+      var_language lang
+      fallback_value english
     }
   }
 
   # Test with the following:
 
-  respond @rdfFr "RDF en français!
-"
+  respond @DeEn "German or English. {vars.langneg_lang} preferred!"
 
-  respond @rdfDeEn "RDF auf deutsch oder englisch, {vars.conneg_lang} preferred!
-"
+  respond @Fr "French"
 
-  respond @rdf "RDF!
-"
+  respond @FullDE "German. Full locale {vars.langneg_lang}"
 
-  respond @htmlBrotli "HTML, but brotli-compressed!
-"
+  respond @ShortEn "English. Short locale {vars.langneg_lang}"
 
-  respond @html "HTML
-"
+  respond @Fallback "Fallback value {vars.langneg_lang}"
 
-  respond "Default
-"
-
-  # If it's working, use like so:
-  # reverse_proxy @rdf localhost:8080
+  respond "Default"
 }
